@@ -104,6 +104,3 @@ Policy grid:
 * Currently, rewards are binary: `1` at terminal states, `0` elsewhere.
 
 ---
-
-```
-```
