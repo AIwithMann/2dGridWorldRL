@@ -1,137 +1,108 @@
+````markdown
+# 2D GridWorld Reinforcement Learning
 
-# 2D Gridworld Reinforcement Learning Agent
-
-This repository contains a Python implementation of a **grid-based environment** and a **reinforcement learning agent** that learns an optimal policy using **importance sampling with Monte Carlo policy evaluation**. The agent interacts with the environment, collects episodes, and updates its value function and policy over time.
-
----
-
-## Table of Contents
-
-* [Project Overview](#project-overview)
-* [Environment](#environment)
-* [Agent](#agent)
-* [Features](#features)
-* [Usage](#usage)
-* [Example](#example)
-* [Dependencies](#dependencies)
-* [License](#license)
+This repository implements a simple **2D GridWorld** environment and agents to practice fundamental **Reinforcement Learning (RL)** algorithms.  
+The project is designed for hands-on exploration of RL concepts with a focus on **Monte Carlo** and **SARSA (n-step)** methods.
 
 ---
 
-## Project Overview
+## Files
 
-The project demonstrates:
+- **TwoDEnv.py**  
+  Defines the `Env2d` environment:
+  - A grid with customizable rows and columns.
+  - Randomly assigned termination states with reward = 1.
+  - Non-terminal states have reward = 0.
 
-* Creation of a gridworld environment with terminal states.
-* Monte Carlo reinforcement learning to estimate the state-value function (`Vgrid`).
-* Policy improvement via a greedy target policy (`TPgrid`).
-* Episode generation and backward updates for importance sampling.
+- **MonteCarlo.py**  
+  Implements a **Monte Carlo control agent** (`MCagent`):
+  - Learns a value function `Vgrid`.
+  - Improves a deterministic target policy `TPgrid`.
+  - Uses exploring starts and weighted importance sampling for updates.
+  - Demonstrates on-policy policy iteration.
 
-The agent learns the optimal policy for reaching terminal states with maximum reward.
-
----
-
-## Environment
-
-The environment (`Env`) is defined as a 2D grid of size `rows x cols`:
-
-* **Reward Grid (`Rgrid`)**: Initialized with zeros and randomly assigned `1` for terminal states.
-* **Termination States**: Cells with reward `1` are terminal.
-* Randomly selects positions for terminal states at initialization.
-
-**Example:**
-
-```python
-env = Env(rows=5, cols=5, termitationStates=2)
-```
+- **Sarsa.py**  
+  Implements a **SARSA n-step agent** (`SarsaAgent`):
+  - Learns an action-value function `Qgrid`.
+  - Improves policy `Pgrid` based on greedy action selection.
+  - Supports n-step backups (parameter `numBackups`).
+  - Demonstrates temporal-difference learning.
 
 ---
 
-## Agent
+## Algorithms
 
-The agent (`Agent`) interacts with the environment using the following features:
+1. **Monte Carlo Control**
+   - Episodic interaction until a terminal state.
+   - Updates based on complete returns.
+   - Slowly converges to optimal policy with enough episodes.
 
-* **State-value grid (`Vgrid`)**: Stores estimated values for each state.
-* **Target policy grid (`TPgrid`)**: Stores the greedy action for each state.
-* **Behavior policy (`BP`)**: Initially uniform random policy.
-* **Epsilon-greedy exploration**: Chooses greedy action with probability `1-epsilon` and random action otherwise.
-* **Episode-based learning**: Updates value function and policy after each episode.
-* **Monte Carlo importance sampling**: Performs backward updates to correct for off-policy learning.
-
-**Actions:** Left (`←`), Up (`↑`), Right (`→`), Down (`↓`)
-
----
-
-## Features
-
-* **Random terminal states**
-* **Epsilon-greedy action selection**
-* **Monte Carlo policy evaluation with importance sampling**
-* **Greedy policy improvement**
-* **Boundary-safe movements**
+2. **SARSA (n-step)**
+   - Temporal-difference method.
+   - Updates based on partial returns with lookahead.
+   - More efficient than pure Monte Carlo.
 
 ---
 
 ## Usage
 
-1. Clone the repository:
+Run Monte Carlo training:
+```bash
+python MonteCarlo.py
+````
+
+Run SARSA training:
 
 ```bash
-git clone https://github.com/AIwithMann/2dGridWorldRL.git
-cd 2dGridWorldRL
+python Sarsa.py
 ```
 
-2. Install dependencies:
+Both scripts will print the evolving **value grid** and **policy grid** during training.
+
+---
+
+## Example Output (Monte Carlo)
+
+```
+Terminal states: [(1, 3), (4, 2)]
+Value Grid:
+[[0.1  0.05 ...]
+ ... ]
+Policy Grid:
+[['↑' '→' ...]
+ ... ]
+```
+
+---
+
+## Requirements
+
+* Python 3.8+
+* NumPy
+
+Install dependencies:
 
 ```bash
 pip install numpy
 ```
 
-3. Run the agent:
+---
 
-```python
-python main.py
-```
+## Notes
+
+* Start with **Monte Carlo** to understand episodic returns.
+* Compare with **SARSA** to see the effect of temporal-difference updates.
+* You can modify grid size, discount factor (`gamma`), exploration (`epsilon`), and number of iterations.
 
 ---
 
-## Example
+## Future Work
 
-```python
-env = Env(5, 5, 2)
-agent = Agent(env, gamma=0.8, epsilon=0.1, maxIterations=20)
-agent.train()
-```
-
-**Output:**
+* Add Q-learning.
+* Add visualization of the agent’s trajectory.
+* Extend environment with negative rewards or obstacles.
 
 ```
-Terminal states: [(np.int64(1), np.int64(0)), (np.int64(3), np.int64(2))]
-Value Grid:
-[[ 0.9936097   0.99029185  0.98300543  0.98004571  0.99547055]
- [ 0.96708664  0.99969992  0.96584621  1.00464839  0.99199519]
- [ 0.99987807  0.9999344   0.99983647  0.9999689   0.99996864]
- [ 0.99580006  0.99580248  0.99579026  0.99577724  0.99578193]
- [ 1.05039344  1.16373353  0.42424311 -0.11235044 -1.75173592]]
-Policy Grid:
-[['↓' '↓' '↓' '↓' '↓']
- ['↓' '↓' '↓' '↓' '↓']
- ['↑' '↑' '↑' '↑' '↑']
- ['↑' '↑' '↑' '↑' '↑']
- ['↑' '↑' '←' '←' '←']]
+
+Do you want me to also include a diagram of the **GridWorld** (as an image in the README) so it’s easier for others to visualize?
 ```
-
----
-
-## Dependencies
-
-* Python 3.8+
-* NumPy
-
----
-
-## License
-
-This project is licensed under the MIT License.
-
-
