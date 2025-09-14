@@ -1,108 +1,109 @@
-````markdown
-# 2D GridWorld Reinforcement Learning
+# Reinforcement Learning on 2D Grid Environment
 
-This repository implements a simple **2D GridWorld** environment and agents to practice fundamental **Reinforcement Learning (RL)** algorithms.  
-The project is designed for hands-on exploration of RL concepts with a focus on **Monte Carlo** and **SARSA (n-step)** methods.
+This repository contains a simple implementation of Reinforcement Learning algorithms on a 2D grid environment. The environment is custom-made, and two learning methods are included:
+
+- **Monte Carlo Control (MC)**
+- **n-step Sarsa**
+
+The project is built for hands-on practice with RL concepts.
 
 ---
 
 ## Files
 
-- **TwoDEnv.py**  
-  Defines the `Env2d` environment:
-  - A grid with customizable rows and columns.
-  - Randomly assigned termination states with reward = 1.
-  - Non-terminal states have reward = 0.
+- **`TwoDEnv.py`**  
+  Defines the 2D grid environment (`Env2d`).  
+  - Each cell is either a normal state or a terminal state.  
+  - Rewards are placed randomly in terminal states.  
 
-- **MonteCarlo.py**  
-  Implements a **Monte Carlo control agent** (`MCagent`):
-  - Learns a value function `Vgrid`.
-  - Improves a deterministic target policy `TPgrid`.
-  - Uses exploring starts and weighted importance sampling for updates.
-  - Demonstrates on-policy policy iteration.
+- **`MonteCarlo.py`**  
+  Implements an on-policy Monte Carlo control agent.  
+  - Learns a state-value function (`Vgrid`) and updates a deterministic greedy policy (`TPgrid`).  
+  - Uses weighted importance sampling for updates.  
 
-- **Sarsa.py**  
-  Implements a **SARSA n-step agent** (`SarsaAgent`):
-  - Learns an action-value function `Qgrid`.
-  - Improves policy `Pgrid` based on greedy action selection.
-  - Supports n-step backups (parameter `numBackups`).
-  - Demonstrates temporal-difference learning.
+- **`Sarsa.py`**  
+  Implements an n-step Sarsa agent.  
+  - Learns an action-value function (`Qgrid`) and improves the policy (`Pgrid`) iteratively.  
+  - Balances exploration and exploitation with epsilon-greedy behavior.  
+  - Supports configurable step size `n`.  
 
 ---
 
 ## Algorithms
 
-1. **Monte Carlo Control**
-   - Episodic interaction until a terminal state.
-   - Updates based on complete returns.
-   - Slowly converges to optimal policy with enough episodes.
+### Monte Carlo Agent
+- Uses **episode-based sampling**.  
+- Starts from a random state, follows epsilon-greedy behavior until termination.  
+- Updates state-value function using weighted importance sampling.  
+- Improves policy by making it greedy w.r.t. updated values.  
 
-2. **SARSA (n-step)**
-   - Temporal-difference method.
-   - Updates based on partial returns with lookahead.
-   - More efficient than pure Monte Carlo.
+### n-step Sarsa Agent
+- Uses **temporal difference learning with backups of length `n`**.  
+- At each step:  
+  - Updates `Q(s,a)` using observed rewards and bootstrapped estimates.  
+  - Improves the policy grid (`Pgrid`) to be greedy w.r.t. learned action-values.  
+- Parameter `n` controls bias-variance tradeoff.  
 
 ---
 
-## Usage
+## Example Usage
 
-Run Monte Carlo training:
+### Monte Carlo
 ```bash
 python MonteCarlo.py
 ````
 
-Run SARSA training:
+Sample output (value grid and policy grid evolve over iterations):
+
+```
+Value Grid:
+[[...]]
+Policy Grid:
+[['→' '↑' ...]
+ [...]]
+```
+
+### Sarsa
 
 ```bash
 python Sarsa.py
 ```
 
-Both scripts will print the evolving **value grid** and **policy grid** during training.
-
----
-
-## Example Output (Monte Carlo)
+Sample output (policy grid shown every 100 episodes):
 
 ```
-Terminal states: [(1, 3), (4, 2)]
-Value Grid:
-[[0.1  0.05 ...]
- ... ]
-Policy Grid:
+Episode 100/1000
+Policy grid:
 [['↑' '→' ...]
- ... ]
+ [...]]
 ```
 
 ---
 
-## Requirements
+## Parameters
 
-* Python 3.8+
-* NumPy
+* `gamma` (float): Discount factor.
+* `epsilon` (float): Probability of random action (exploration).
+* `maxIterations` (int): Number of training episodes.
+* `numBackups` (int, Sarsa only): Number of steps (`n`) in n-step updates.
+* `alpha` (float, Sarsa only): Learning rate.
 
-Install dependencies:
+---
 
-```bash
-pip install numpy
-```
+## Key Differences
+
+* **MC**: Updates only after an entire episode. Works well with complete trajectories.
+* **Sarsa**: Updates online with n-step lookahead. More sample-efficient.
 
 ---
 
 ## Notes
 
-* Start with **Monte Carlo** to understand episodic returns.
-* Compare with **SARSA** to see the effect of temporal-difference updates.
-* You can modify grid size, discount factor (`gamma`), exploration (`epsilon`), and number of iterations.
+* The code is educational and not optimized.
+* For reproducibility, random seeds can be fixed before running.
+* Currently, rewards are binary: `1` at terminal states, `0` elsewhere.
 
 ---
 
-## Future Work
-
-* Add Q-learning.
-* Add visualization of the agent’s trajectory.
-* Extend environment with negative rewards or obstacles.
-
 ```
-
-Do you want me to also include a diagram of the **GridWorld** (as an image in the README) so it’s easier for others to visualize?
 ```
