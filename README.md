@@ -25,7 +25,12 @@ The project is built for hands-on practice with RL concepts.
   Implements an n-step Sarsa agent.  
   - Learns an action-value function (`Qgrid`) and improves the policy (`Pgrid`) iteratively.  
   - Balances exploration and exploitation with epsilon-greedy behavior.  
-  - Supports configurable step size `n`.  
+  - Supports configurable step size `n`.
+- **`OneStepQLearning.py`**
+  Impements 1-step Q learning agent.
+  - Learns an action value function (`Qgrid`) and improvees the policy (`TPgrid`) while following the random policy (`Pgrid`)
+  - Balances exploratioon and exploitation with epison-greedy behavior and diminishing epislon value.
+     
 
 ---
 
@@ -44,41 +49,14 @@ The project is built for hands-on practice with RL concepts.
   - Improves the policy grid (`Pgrid`) to be greedy w.r.t. learned action-values.  
 - Parameter `n` controls bias-variance tradeoff.  
 
+### 1-step Q-learinng Agent
+- Uses **off-policy temporal difference learning with 1-step backups**
+- At eacg step:
+  - Updates `Q(s,a)` with observed rewards and $$\max_a Q(s',a)$$.
+    - Improves the target policy grid (`TPgrid`) to be greedy w.r.t. learned action values function but behavior is handeled by random behavior policy (`Pgrid`) which is not updated
+  
 ---
 
-## Example Usage
-
-### Monte Carlo
-```bash
-python MonteCarlo.py
-````
-
-Sample output (value grid and policy grid evolve over iterations):
-
-```
-Value Grid:
-[[...]]
-Policy Grid:
-[['→' '↑' ...]
- [...]]
-```
-
-### Sarsa
-
-```bash
-python Sarsa.py
-```
-
-Sample output (policy grid shown every 100 episodes):
-
-```
-Episode 100/1000
-Policy grid:
-[['↑' '→' ...]
- [...]]
-```
-
----
 
 ## Parameters
 
@@ -94,6 +72,7 @@ Policy grid:
 
 * **MC**: Updates only after an entire episode. Works well with complete trajectories.
 * **Sarsa**: Updates online with n-step lookahead. More sample-efficient.
+* **Q-learning**: Updates online with 1-step lookahead. But the policy used for generating episodes is never changed.
 
 ---
 
