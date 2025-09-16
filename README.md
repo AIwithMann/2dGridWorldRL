@@ -29,8 +29,12 @@ The project is built for hands-on practice with RL concepts.
 - **`OneStepQLearning.py`**
   Impements 1-step Q learning agent.
   - Learns an action value function (`Qgrid`) and improvees the policy (`TPgrid`) while following the random policy (`Pgrid`)
-  - Balances exploratioon and exploitation with epison-greedy behavior and diminishing epislon value.
-     
+  - Balances exploratioon and exploitation with epsilon-greedy behavior and diminishing epsilon value.
+- **`nStepQLearning.py`**
+  Implements n-step Q learning agent.
+  - Learns an action value function (`Qgrid`) and improves the policy (`TPgrid`) while following the random policy.
+  - Balanes exploration and exploitation with epsilon-greedy behavior and diminishing epsilon value.
+  - Balances the updates with diminishing alpha value.
 
 ---
 
@@ -51,9 +55,16 @@ The project is built for hands-on practice with RL concepts.
 
 ### 1-step Q-learinng Agent
 - Uses **off-policy temporal difference learning with 1-step backups**
-- At eacg step:
+- At each step:
   - Updates `Q(s,a)` with observed rewards and $$\max_a Q(s',a)$$.
-    - Improves the target policy grid (`TPgrid`) to be greedy w.r.t. learned action values function but behavior is handeled by random behavior policy (`Pgrid`) which is not updated
+  - Improves the target policy grid (`TPgrid`) to be greedy w.r.t. learned action value function but behavior is handeled by random behavior policy (`Pgrid`) which is not updated
+
+### n-Step Q Learning Agent
+- Uses **off-policy temporal difference learning with n-step backups**
+- At each step:
+  - Updates `Q(s,a)` with observed rewards and $$\max_a Q(S_{t+n},a)$$
+  - Improves the target policy grid (`TPgrid`) to be greedy w.r.t. learned action value functions but behavior is handeled epsilon-greedy implicit policy.
+  - 
   
 ---
 
@@ -72,8 +83,8 @@ The project is built for hands-on practice with RL concepts.
 
 * **MC**: Updates only after an entire episode. Works well with complete trajectories.
 * **Sarsa**: Updates online with n-step lookahead. More sample-efficient.
-* **Q-learning**: Updates online with 1-step lookahead. But the policy used for generating episodes is never changed.
-
+* **1-step Q-learning**: Updates online with 1-step lookahead. But the policy used for generating episodes is never changed.
+* **n-step Q-learning**: Updates online with n-step lookahead. But the policy used for generating episodes is never changed
 ---
 
 ## Notes
