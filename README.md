@@ -4,6 +4,9 @@ This repository contains a simple implementation of Reinforcement Learning algor
 
 - **Monte Carlo Control (MC)**
 - **n-step Sarsa**
+- **1-step Q-learning**
+- **n-step Q-learning**
+- **Sarsa(λ)**
 
 The project is built for hands-on practice with RL concepts.
 
@@ -26,16 +29,23 @@ The project is built for hands-on practice with RL concepts.
   - Learns an action-value function (`Qgrid`) and improves the policy (`Pgrid`) iteratively.  
   - Balances exploration and exploitation with epsilon-greedy behavior.  
   - Supports configurable step size `n`.
+  - 
 - **`OneStepQLearning.py`**
   Impements 1-step Q learning agent.
   - Learns an action value function (`Qgrid`) and improvees the policy (`TPgrid`) while following the random policy (`Pgrid`)
   - Balances exploratioon and exploitation with epsilon-greedy behavior and diminishing epsilon value.
+  - 
 - **`nStepQLearning.py`**
   Implements n-step Q learning agent.
   - Learns an action value function (`Qgrid`) and improves the policy (`TPgrid`) while following the random policy.
   - Balanes exploration and exploitation with epsilon-greedy behavior and diminishing epsilon value.
   - Balances the updates with diminishing alpha value.
 
+- **`Sarsa(λ).py`**
+  Implements Sarsa(λ) algorithm agent.
+  - Learns an action value function function and improves the policy.
+  - Balances exploration and exploitation with epsilon-greed behavior and diminishing epsilon value.
+  
 ---
 
 ## Algorithms
@@ -63,9 +73,13 @@ The project is built for hands-on practice with RL concepts.
 - Uses **off-policy temporal difference learning with n-step backups**
 - At each step:
   - Updates `Q(s,a)` with observed rewards and $$\max_a Q(S_{t+n},a)$$
-  - Improves the target policy grid (`TPgrid`) to be greedy w.r.t. learned action value functions but behavior is handeled epsilon-greedy implicit policy.
-  - 
-  
+  - Improves the target policy grid (`TPgrid`) to be greedy w.r.t. learned action value functions but behavior is handeled by epsilon-greedy implicit policy.
+
+### Sarsa(λ) Agents
+- Uses **on-policy TD(λ)** which is also known as **Sarsa(λ)**
+- Updates `Q(s,a)` with observed rewards, the eligibility trace for that state-action pair and value function of next state and action pair.
+- Imporves the policy grid to be gredy w.r.t. learned action value functions.
+
 ---
 
 
@@ -85,6 +99,7 @@ The project is built for hands-on practice with RL concepts.
 * **Sarsa**: Updates online with n-step lookahead. More sample-efficient.
 * **1-step Q-learning**: Updates online with 1-step lookahead. But the policy used for generating episodes is never changed.
 * **n-step Q-learning**: Updates online with n-step lookahead. But the policy used for generating episodes is never changed
+* **Sarsa(λ)**: Updates online with eligiblity traces. Converges fastly but time and space complexities are a bit higher.
 ---
 
 ## Notes
