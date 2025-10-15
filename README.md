@@ -1,6 +1,6 @@
 # Reinforcement Learning on 2D Grid Environment
 
-This repository contains a simple implementation of Reinforcement Learning algorithms on a 2D grid environment. The environment is custom-made, and two learning methods are included:
+This repository contains a simple implementation of Reinforcement Learning algorithms on a 2D grid environment. The environment is custom-made, and several learning methods are included:
 
 - **Monte Carlo Control (MC)**
 - **n-step Sarsa**
@@ -8,6 +8,7 @@ This repository contains a simple implementation of Reinforcement Learning algor
 - **n-step Q-learning**
 - **Sarsa(λ)**
 - **Watkins's Q(λ)**
+- **Dyna-Q** (Q-learning with planning steps)
 
 The project is built for hands-on practice with RL concepts.
 
@@ -18,7 +19,7 @@ The project is built for hands-on practice with RL concepts.
 - **`TwoDEnv.py`**  
   Defines the 2D grid environment (`Env2d`).  
   - Each cell is either a normal state or a terminal state.  
-  - Rewards are placed randomly in terminal states.  
+  - Rewards are placed at terminal states.  
 
 - **`MonteCarlo.py`**  
   Implements an on-policy Monte Carlo control agent.  
@@ -29,33 +30,38 @@ The project is built for hands-on practice with RL concepts.
   Implements an n-step Sarsa agent.  
   - Learns an action-value function (`Qgrid`) and improves the policy (`Pgrid`) iteratively.  
   - Balances exploration and exploitation with epsilon-greedy behavior.  
-  - Supports configurable step size `n`.
-  - 
-- **`OneStepQLearning.py`**
-  Impements 1-step Q learning agent.
-  - Learns an action value function (`Qgrid`) and improvees the policy (`TPgrid`) while following the random policy (`Pgrid`)
-  - Balances exploratioon and exploitation with epsilon-greedy behavior and diminishing epsilon value.
-  - 
-- **`nStepQLearning.py`**
-  Implements n-step Q learning agent.
-  - Learns an action value function (`Qgrid`) and improves the policy (`TPgrid`) while following the random policy.
-  - Balanes exploration and exploitation with epsilon-greedy behavior and diminishing epsilon value.
-  - Balances the updates with diminishing alpha value.
+  - Supports configurable step size `n`.  
 
-- **`Sarsa(λ).py`**
-  Implements Sarsa(λ) algorithm agent.
-  - Learns an action value function and improves the policy.
-  - Balances exploration and exploitation with epsilon-greed behavior and diminishing epsilon value.
-  - Does balance the updates using diminishing value of alpha.
-  - Implements the backward view of on-policy TD(λ) algorithm with eligilblity traces.
+- **`OneStepQLearning.py`**  
+  Implements 1-step Q-learning agent.  
+  - Learns an action-value function (`Qgrid`) and updates the target policy (`TPgrid`).  
+  - Uses epsilon-greedy behavior and a diminishing epsilon schedule.  
 
-- **`Watkins'sQ(λ)**
-  Implements Q(λ) algorithm agent.
-  - Learns ana ction value function and improves the policy
-  - Balances exploration and exploitation with epsilon-gredy behavior and diminishing epsilon value
-  - Balances the updates with diminishing alpha value
-  - Implements the backward view of off-policy TD(λ) algorithm with eligiblity traces.
-  
+- **`nStepQLearning.py`**  
+  Implements n-step Q-learning agent.  
+  - Learns an action-value function (`Qgrid`) and updates the target policy (`TPgrid`).  
+  - Balances exploration and exploitation with epsilon-greedy behavior.  
+  - Supports n-step updates with optional diminishing alpha (learning rate).  
+
+- **`Sarsa(λ).py`**  
+  Implements Sarsa(λ) agent (on-policy TD(λ)).  
+  - Learns an action-value function and updates the policy.  
+  - Uses eligibility traces to speed up learning.  
+  - Balances exploration and exploitation with epsilon-greedy behavior and decaying epsilon.  
+
+- **`WatkinsQ(λ).py`**  
+  Implements Watkins's Q(λ) agent (off-policy TD(λ)).  
+  - Learns an action-value function and updates the policy.  
+  - Uses eligibility traces for faster convergence.  
+  - Exploration handled with epsilon-greedy implicit policy.  
+
+- **`DynaQ.py`**  
+  Implements the **Dyna-Q algorithm**: Q-learning with planning steps.  
+  - Learns an action-value function (`Qgrid`) and updates the policy (`TPgrid`).  
+  - Maintains a model of the environment (`model`) to simulate experiences.  
+  - Performs `n` planning steps per real step to accelerate learning.  
+  - Balances exploration and exploitation with epsilon-greedy behavior and decaying epsilon.  
+
 ---
 
 ## Algorithms
@@ -67,61 +73,65 @@ The project is built for hands-on practice with RL concepts.
 - Improves policy by making it greedy w.r.t. updated values.  
 
 ### n-step Sarsa Agent
-- Uses **temporal difference learning with backups of length `n`**.  
-- At each step:  
-  - Updates `Q(s,a)` using observed rewards and bootstrapped estimates.  
-  - Improves the policy grid (`Pgrid`) to be greedy w.r.t. learned action-values.  
+- Uses **on-policy TD learning with n-step backups**.  
+- Updates `Q(s,a)` using observed rewards and bootstrapped estimates.  
+- Improves the policy grid (`Pgrid`) to be greedy w.r.t. learned action-values.  
 - Parameter `n` controls bias-variance tradeoff.  
 
-### 1-step Q-learinng Agent
-- Uses **off-policy temporal difference learning with 1-step backups**
-- At each step:
-  - Updates `Q(s,a)` with observed rewards and $$\max_a Q(s',a)$$.
-  - Improves the target policy grid (`TPgrid`) to be greedy w.r.t. learned action value function but behavior is handeled by random behavior policy (`Pgrid`) which is not updated
+### 1-step Q-learning Agent
+- Uses **off-policy TD learning with 1-step backups**.  
+- Updates `Q(s,a)` using observed rewards and `max_a Q(s',a)`.  
+- Target policy (`TPgrid`) is greedy, behavior policy (`Pgrid`) is random.  
 
-### n-Step Q Learning Agent
-- Uses **off-policy temporal difference learning with n-step backups**
-- At each step:
-  - Updates `Q(s,a)` with observed rewards and $$\max_a Q(S_{t+n},a)$$
-  - Improves the target policy grid (`TPgrid`) to be greedy w.r.t. learned action value functions but behavior is handeled by epsilon-greedy implicit policy.
+### n-step Q-learning Agent
+- Uses **off-policy TD learning with n-step backups**.  
+- Updates `Q(s,a)` using observed rewards and `max_a Q(S_{t+n},a)`.  
+- Target policy (`TPgrid`) is greedy, behavior policy is epsilon-greedy.  
 
 ### Sarsa(λ) Agent
-- Uses **on-policy TD(λ)** which is also known as **Sarsa(λ)**
-- Updates `Q(s,a)` with observed rewards, the eligibility trace for that state-action pair and value function of next state and action pair.
-- Improves the policy grid to be greedy w.r.t. learned action value functions.
+- Uses **on-policy TD(λ)** with eligibility traces.  
+- Updates `Q(s,a)` using traces and next state-action values.  
+- Policy (`Pgrid`) is greedy w.r.t. learned Q-values.  
 
-### Q(λ) Angest
-- Usees **off-polcicy TD(λ)** which is also knows as **Watkins's Q(λ)**.
-- Updates `Q(s,a)` with observed rewards, the eligiblity trace fot that state-action pair and value function of next state and action pair.
-- Improves the policy grid to be gredy w.r.t. learned action value functions but behavior is handeled by epsilon-greedy implicit policy, which is defined implicitly.
+### Watkins's Q(λ) Agent
+- Uses **off-policy TD(λ)** with eligibility traces.  
+- Updates `Q(s,a)` using traces and next state-action values.  
+- Policy is greedy (`TPgrid`), behavior is epsilon-greedy.  
+
+### Dyna-Q Agent
+- Combines **Q-learning** with **planning**.  
+- Maintains a model of transitions and rewards (`model`).  
+- Performs multiple simulated updates per real step.  
+- Accelerates learning by reusing past experiences.  
+- Policy (`TPgrid`) is greedy, behavior is epsilon-greedy.  
 
 ---
 
-
 ## Parameters
 
-* `gamma` (float): Discount factor.
-* `epsilon` (float): Probability of random action (exploration).
-* `maxIterations` (int): Number of training episodes.
-* `numBackups` (int, Sarsa only): Number of steps (`n`) in n-step updates.
-* `alpha` (float, Sarsa only): Learning rate.
+* `gamma` (float): Discount factor.  
+* `epsilon` (float): Probability of random action (exploration).  
+* `maxIterations` (int): Number of training episodes.  
+* `numBackups` (int, Sarsa only): Number of steps (`n`) in n-step updates.  
+* `alpha` (float, Sarsa/Q-learning only): Learning rate.  
+* `planningSteps` (int, Dyna-Q only): Number of simulated updates per real step.  
 
 ---
 
 ## Key Differences
 
-* **MC**: Updates only after an entire episode. Works well with complete trajectories.
-* **Sarsa**: Updates online with n-step lookahead. More sample-efficient.
-* **1-step Q-learning**: Updates online with 1-step lookahead. But the policy used for generating episodes is never changed.
-* **n-step Q-learning**: Updates online with n-step lookahead. But the policy used for generating episodes is never changed
-* **Sarsa(λ)**: Updates online with eligiblity traces. Converges fastly but time and space complexities are a bit higher.
-* **Wakins's Q(λ)**: Updates online with eligiblity traces. But the policy used for geberating episodes it never changed/ Converges faster with the cost of higher time and space complexity.
+* **MC**: Updates only after an entire episode; works well with complete trajectories.  
+* **Sarsa**: Updates online with n-step lookahead; more sample-efficient.  
+* **1-step Q-learning**: Updates online with 1-step lookahead; behavior policy is not updated.  
+* **n-step Q-learning**: Updates online with n-step lookahead; behavior policy is epsilon-greedy but not changed.  
+* **Sarsa(λ)**: Updates online with eligibility traces; faster convergence but higher space/time complexity.  
+* **Watkins's Q(λ)**: Off-policy TD(λ); faster convergence with eligibility traces, higher space/time complexity.  
+* **Dyna-Q**: Combines Q-learning and planning; accelerates learning by simulating multiple experiences per real step.  
+
 ---
 
 ## Notes
 
-* The code is educational and not optimized.
-* For reproducibility, random seeds can be fixed before running.
-* Currently, rewards are binary: `1` at terminal states, `0` elsewhere.
-
----
+* The code is educational and not optimized for speed.  
+* Random seeds can be fixed for reproducibility.  
+* Currently, rewards are binary: `1` at terminal states, `0` elsewhere.  

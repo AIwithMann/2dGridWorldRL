@@ -11,7 +11,7 @@ class QLearningAgent:
         self.maxIterations = maxIterations
         self.n = planningSteps
 
-        self.Qgrid = np.random.randint(low=-2,high = 2,size=(4, self.env.rows, self.env.cols )).astype(float) # Q function grid
+        self.Qgrid = np.randomvarA__A = np.zeros((4, self.env.rows, self.env.cols)) 
         self.Pgrid = np.random.choice(a=['←','↑','→','↓'],size=(self.env.rows,self.env.cols)) # Policy grid
         self.pos = np.zeros(2, dtype=int) # agent's position
         self.actions = np.array(['←','↑','→','↓'])
@@ -19,13 +19,15 @@ class QLearningAgent:
         self.model = {}
 
 
-    def highestValueAction(self,pos=None):
+    def highestValueAction(self,pos=None,returnStr=False):
         if pos is None:
             temp = self.Qgrid[:,self.pos[0],self.pos[1]]
-            return np.argmax(temp)
+            idx = np.argmax(temp)
         else:
             temp = self.Qgrid[:, pos[0],pos[1]]
             idx = np.argmax(temp)
+        
+        if returnStr:
             match(idx):
                 case 0:
                     return '←'
@@ -35,38 +37,24 @@ class QLearningAgent:
                     return '→'
                 case 3:
                     return '↓'
-                
-    def act(self)->int:
-        
-        pr = 1 - self.e 
-        if r.random()<pr:
-            choice = self.highestValueAction(self.pos)
-            match(choice):
-                case '←':
-                    self.actL()
-                    return 0
-                case '↑':
-                    self.actU()
-                    return 1
-                case '→':
-                    self.actR()
-                    return 2
-                case '↓':
-                    self.actD()
-                    return 3
-            return self.actions.tolist().index(choice)
         else:
-            choice = r.choice(['←','↑','→','↓'])
-            match(choice):
-                case '←':
-                    self.actL()
-                case '↑':
-                    self.actU()
-                case '→':
-                    self.actR()
-                case '↓':
-                    self.actD()
-            return self.actions.tolist().index(choice)
+            return idx                
+    def act(self) -> int:
+        if r.random() < 1 - self.e:
+            # Greedy action
+            choice = self.highestValueAction(self.pos)
+        else:
+            # Random action
+            choice = r.randint(0, 3)  # 0=←, 1=↑, 2=→, 3=↓
+        
+        # Move agent according to the action index
+        if choice == 0: self.actL()
+        elif choice == 1: self.actU()
+        elif choice == 2: self.actR()
+        elif choice == 3: self.actD()
+        
+        return choice
+
                 
     def actL(self)->None: # Moving Left
         if self.pos[1]==0:
@@ -92,6 +80,7 @@ class QLearningAgent:
             self.pos[0] += 1
 
     def train(self,alpha:float,e_min:int = 0.01, e_decay:float = 0.995)->None:
+        print(self.env.terminationStates)
         for episode in range(self.maxIterations):
             t = 0
             self.e = max(e_min, self.e0 * (e_decay**episode))
@@ -109,18 +98,25 @@ class QLearningAgent:
                     - self.Qgrid[a, prevPos[0], prevPos[1]]
                 )   
 
-                self.TPgrid[prevPos[0],prevPos[1]] = self.highestValueAction(prevPos)
-                self.model[]
-                if self.pos in self.env.terminationStates:
-                    t = 1
-                elif t ==1:
+                self.TPgrid[prevPos[0],prevPos[1]] = self.highestValueAction(prevPos,True)
+                self.model[(tuple(prevPos), a)] = (tuple(self.pos),self.env.Rgrid[self.pos[0], self.pos[1]])
+                
+                for i in range(self.n):
+                    key = r.choice(list(self.model.keys()))
+                    nextS, Reward = self.model[key]
+                    nextA = self.highestValueAction(key[0])
+                    self.Qgrid[key[1], key[0][0],key[0][1]] += alpha * (
+                        Reward + self.g * self.Qgrid[nextA, nextS[0],nextS[1]] - self.Qgrid[key[1],key[0][0] ,key[0][1]]
+                    )
+
+                if tuple(self.pos) in self.env.terminationStates:
                     break
 
 
-            if (episode+1)%100 == 0:
-                print(f'{episode + 1}/{self.maxIterations} = \n {self.TPgrid}')
+            if episode%100 ==0:
+                print(f'{episode }/{self.maxIterations} = \n {self.TPgrid}')
 
 #driver code
 env = Env.Env2d(10,10,4)
-agent = QLearningAgent(env, 0.9,0.3,5000)
-agent.train(0.5)
+agent = QLearningAgent(env=env, gamma=0.9,epsilon=0.3,maxIterations=5000,planningSteps=5)
+agent.train(0.2)
