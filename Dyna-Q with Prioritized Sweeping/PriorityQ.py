@@ -6,6 +6,9 @@ class Queue:
         self.Q.append(Value)
         self.Q.sort(key=lambda x: x[0])
     def dequeue(self):
-        Val = self.Q[-1]
+        if len(self.Q) == 0:
+            return None
+
+        Val = self.Q[len(self.Q)-1]
         self.Q.pop()
-        return val
+        return Val
