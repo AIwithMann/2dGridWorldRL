@@ -61,7 +61,47 @@ Each agent learns an **action-value function (`Qgrid` or approximated Q)** and u
 
 ## Algorithm Highlights
 
-*(Details for each algorithm remain the same as previous README.)*
+### Monte Carlo Control
+- Episode-based updates; policy improved after each episode.  
+- Weighted importance sampling for accurate value estimation.  
+- Behavior policy is ε-greedy.
+
+### n-step Sarsa
+- On-policy TD learning with `n`-step lookahead.  
+- Updates `Q(s,a)` and policy `Pgrid`.  
+- Parameter `n` controls bias-variance trade-off.
+
+### 1-step Q-learning
+- Off-policy TD update with 1-step backup.  
+- Target policy `TPgrid` is greedy; behavior policy is ε-greedy.
+
+### n-step Q-learning
+- Off-policy TD updates using `n` steps.  
+- Balances exploration and exploitation with ε-greedy behavior.
+
+### Sarsa(λ)
+- On-policy TD(λ) with eligibility traces.  
+- Faster convergence than n-step methods.  
+- Policy updated greedily with respect to Q-values.
+
+### Watkins’s Q(λ)
+- Off-policy TD(λ) with eligibility traces.  
+- Target policy is greedy, behavior is ε-greedy.
+
+### Dyna-Q
+- Q-learning combined with **planning steps** using a learned model.  
+- Each real step is followed by `n` simulated updates to accelerate learning.  
+- Policy is greedy w.r.t. `Qgrid`, behavior is ε-greedy.
+
+### Dyna-Q with Prioritized Sweeping
+- Prioritizes **planning updates** using TD-error.  
+- Updates the most significant state-action pairs first.  
+- Improves efficiency in environments with sparse rewards.
+
+### Semi-Gradient Sarsa
+- Uses **function approximation** for continuous states.  
+- Q-value represented as `Q(s,a) ≈ w · φ(s,a)` where φ is a feature vector.  
+
 
 ---
 
